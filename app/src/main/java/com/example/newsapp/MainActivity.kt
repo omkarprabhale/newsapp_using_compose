@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
@@ -41,6 +42,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.example.Articles
 import com.example.newsapp.model.NewsViewModel
 import com.example.newsapp.ui.theme.NewsAppTheme
+import com.example.newsapp.utils.Network
 
 
 class MainActivity : ComponentActivity() {
@@ -54,12 +56,38 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    newsModel = ViewModelProvider(this).get(NewsViewModel::class.java)
-                    Greeting(newsModel.newsState.collectAsState())
+                    if (Network.isNetworkAvailable(this)) {
+                        newsModel = ViewModelProvider(this)[NewsViewModel::class.java]
+                        Greeting(newsModel.newsState.collectAsState())
+                    } else {
+                        Nointernet()
+
+                    }
+
                 }
             }
         }
 
+    }
+
+
+    @Composable
+    private fun Nointernet() {
+
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Bottom,
+        ) {
+            Text(
+                text = "Network disabled. Please connect to the internet.",
+                modifier = Modifier.wrapContentWidth().padding(15.dp),
+                fontFamily = FontFamily.SansSerif,
+                fontSize = 20.sp,
+                color = Color.DarkGray,
+
+            )
+        }
     }
 
     override fun onResume() {
@@ -73,7 +101,6 @@ class MainActivity : ComponentActivity() {
         LaunchedEffect(key1 = news.value.isNotEmpty())
         {
             loading = true
-            Log.d("Omkar", "loading false")
         }
         if (!loading) {
             CircularProgressIndicator(
@@ -86,7 +113,7 @@ class MainActivity : ComponentActivity() {
             )
         }
         Column() {
-            if(loading) {
+            if (loading) {
                 Text(
                     text = "TOP Headlines",
                     modifier = Modifier
@@ -103,7 +130,6 @@ class MainActivity : ComponentActivity() {
             ) {
 
                 if (news != null) {
-                    loading = true
                     items(news.value) { it ->
                         NewsCard(data = it)
                     }
@@ -175,7 +201,7 @@ class MainActivity : ComponentActivity() {
     @Preview
     @Composable
     private fun TextComposablePreview() {
-        NewsCard(Articles())
+        Nointernet()
     }
 }
 

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.example.Articles
 import com.example.example.News
 import com.example.newsapp.NewsService
+import com.example.newsapp.utils.Network
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,12 +28,10 @@ class NewsViewModel : ViewModel() {
 
     fun getNewsData() {
         viewModelScope.launch {
-            Log.d(TAG, "Omkar")
             val newsService = NewsService.newsInterface.getHeadlines("in", 1)
             newsService.enqueue(object : Callback<News> {
                 override fun onResponse(call: Call<News>, response: Response<News>) {
                     if (response.body() != null && response.isSuccessful) {
-                        Log.d("omkar", "data in")
                         news.value = response.body()!!.articles
                     }
 
