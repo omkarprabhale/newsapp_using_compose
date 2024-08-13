@@ -8,6 +8,10 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 const val BASE_URL = "https://newsapi.org/";
+
+/*
+Each user should have a unique API key. To create one, log in at https://newsapi.org/.
+*/
 const val API_KEY = "";
 
 interface NewsInterface {
